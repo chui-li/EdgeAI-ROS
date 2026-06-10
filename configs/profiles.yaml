@@ -1,0 +1,20 @@
+profiles:
+  pc:
+    description: Native PC or workstation baseline.
+    docker_args: ""
+  edge_2cpu_4gb:
+    description: Simulated edge device.
+    docker_args: "--cpus=2 --memory=4g --memory-swap=4g"
+  lowend_1cpu_2gb:
+    description: Simulated low-end edge device.
+    docker_args: "--cpus=1 --memory=2g --memory-swap=2g"
+  cpu_stress:
+    description: Runtime CPU stress through stress_node.
+    stress_mode: cpu
+  memory_stress:
+    description: Runtime memory pressure through stress_node.
+    stress_mode: memory
+  mixed_stress:
+    description: Runtime CPU, memory, and I/O pressure.
+    stress_mode: mixed
+

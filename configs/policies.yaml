@@ -1,0 +1,17 @@
+policies:
+  static_large:
+    description: Always use the highest quality RepViT runtime config.
+  static_small:
+    description: Always use the lightest RepViT runtime config.
+  rule_adaptive:
+    description: Reactively downgrade or upgrade based on pressure and deadline feedback.
+  predictive_adaptive:
+    description: Use EWMA latency prediction and OS pressure to choose the best feasible config.
+
+default_runtime:
+  deadline_ms: 33.0
+  max_queue: 4
+  models: "repvit_m0_9,repvit_m0_9,repvit_m0_9"
+  image_sizes: "160,192,224"
+  quality_scores: "0.72,0.86,1.0"
+

@@ -1,0 +1,47 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+
+# ROS 2 / colcon build outputs
+build/
+install/
+log/
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+
+# Large datasets and archives
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+data/imagenet*/
+data/*imagenet*/
+
+# Experiment outputs
+data/results/*.csv
+data/results/*.log
+data/results/plots/
+
+# Model checkpoints and local model downloads
+checkpoints/
+downloads/
+gemma-3-1b-it/
+Llama-3.2-1B/
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+
+# External upstream model repositories cloned locally
+RepViT/
+
+# Local editor / OS noise
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

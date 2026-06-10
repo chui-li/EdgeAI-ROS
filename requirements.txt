@@ -1,0 +1,12 @@
+# pip-installable Python dependencies only.
+# ROS 2 packages such as rclpy are not distributed on PyPI.
+# Install rclpy through ROS 2 Humble, WSL/Ubuntu, or the provided Docker image.
+psutil
+numpy
+opencv-python-headless
+torch
+torchvision
+timm==0.5.4
+transformers==4.45.2
+pandas
+matplotlib
