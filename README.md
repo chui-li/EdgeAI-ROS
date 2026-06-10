@@ -105,7 +105,7 @@ level 2: context_length=2048, max_new_tokens=128, quality_score=1.00
 
 For the LLM node, `deadline_ms` is treated as a TPOT target in milliseconds per generated token.
 
-## Model Loading
+## Model And Dataset Downloads
 
 `adaptive_repvit_node` tries model sources in this order:
 
@@ -134,6 +134,8 @@ For official RepViT experiments, set:
 export REPVIT_PATH=/workspace/OS2026/RepViT
 ```
 
+### Local LLM Models
+
 `adaptive_llm_node` tries to load a Hugging Face causal language model. The default is:
 
 ```text
@@ -142,13 +144,88 @@ sshleifer/tiny-gpt2
 
 If `transformers` is unavailable, the model is not cached, or network access is disabled, the node falls back to an offline lightweight generator. The fallback keeps OS scheduling experiments runnable, but language quality should not be evaluated.
 
-To download the Gemma model used in later local LLM experiments:
+Gemma and Llama local model folders are intentionally not committed to GitHub. Download them locally with this repository's helper script.
 
-```bash
-python3 download_model.py
+On Windows PowerShell:
+
+```powershell
+cd C:\Users\Emily\Downloads\EdgeAI-ROS
+python download_model.py --model gemma
+python download_model.py --model llama
 ```
 
-This downloads `google/gemma-3-1b-it` into `./gemma-3-1b-it`.
+Inside Docker or WSL:
+
+```bash
+cd /workspace/EdgeAI-ROS
+python3 download_model.py --model gemma
+python3 download_model.py --model llama
+```
+
+The default output folders are:
+
+```text
+gemma-3-1b-it/
+Llama-3.2-1B/
+```
+
+The Llama model is gated on Hugging Face. If the download fails with an authorization error, accept the model license on Hugging Face and run `huggingface-cli login` before running `download_model.py` again.
+
+To download a custom Hugging Face model:
+
+```bash
+python3 download_model.py --model organization/model-name --local-dir ./local-model-name
+```
+
+### ImageNet Dataset
+
+The full ImageNet object localization zip is intentionally not committed to GitHub because it is very large. Download it from Kaggle on the machine where you will run the experiments.
+
+Install and configure the Kaggle CLI:
+
+```bash
+python3 -m pip install kaggle
+```
+
+Place your Kaggle API token at:
+
+```text
+Linux/Docker/WSL: ~/.kaggle/kaggle.json
+Windows: C:\Users\Emily\.kaggle\kaggle.json
+```
+
+On Linux, Docker, or WSL, Kaggle may require:
+
+```bash
+chmod 600 ~/.kaggle/kaggle.json
+```
+
+Then download the ImageNet object localization challenge archive:
+
+```bash
+cd /workspace/EdgeAI-ROS
+kaggle competitions download -c imagenet-object-localization-challenge
+```
+
+On Windows PowerShell:
+
+```powershell
+cd C:\Users\Emily\Downloads\EdgeAI-ROS
+kaggle competitions download -c imagenet-object-localization-challenge
+```
+
+The downloaded archive is named:
+
+```text
+imagenet-object-localization-challenge.zip
+```
+
+Keep the archive local. It is ignored by Git. Extract or prepare only the small image subset needed for experiments under:
+
+```text
+data/imagenet_test_images/
+data/imagenet_val_subset_1_per_class/
+```
 
 ## Environment Setup
 
@@ -414,12 +491,21 @@ PERIOD_SEC=0.2
 
 ## LLM-Only Experiments
 
-Use local models when possible. For Llama or Gemma, set `LLM_MODEL` to the local directory.
+Use local models when possible. Download them first with `download_model.py`, then set `LLM_MODEL` to the local directory.
 
 Gemma example:
 
 ```bash
+python3 download_model.py --model gemma
 export LLM_MODEL=/workspace/EdgeAI-ROS/gemma-3-1b-it
+export LOCAL_FILES_ONLY=true
+```
+
+Llama example:
+
+```bash
+python3 download_model.py --model llama
+export LLM_MODEL=/workspace/EdgeAI-ROS/Llama-3.2-1B
 export LOCAL_FILES_ONLY=true
 ```
 
