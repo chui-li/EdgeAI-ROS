@@ -44,8 +44,6 @@ data/results/*llm*.csv
 
 ## Legacy RepViT Pipeline Notes
 
-`README.md` documented the earlier RepViT-only ROS 2 pipeline. That pipeline is now folded into `edgeai_ros`, but the original operating model is still useful for debugging the image path:
-
 ```text
 data/test_images/*.jpg
         |
