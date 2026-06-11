@@ -42,6 +42,32 @@ edgeai_logger
 data/results/*llm*.csv
 ```
 
+## Legacy RepViT Pipeline Notes
+
+`README(1).md` documented the earlier RepViT-only ROS 2 pipeline. That pipeline is now folded into `edgeai_ros`, but the original operating model is still useful for debugging the image path:
+
+```text
+data/test_images/*.jpg
+        |
+        v
+image_publisher
+        |
+        | /image_raw  sensor_msgs/msg/Image
+        v
+adaptive_repvit_node
+        |
+        | /repvit_latency
+        v
+edgeai_logger
+        |
+        v
+data/results/*.csv
+```
+
+Older notes may refer to package and node names such as `repvit_edge_ai`, `repvit_inference_node`, and `logger_node`. In this repository, use `edgeai_ros`, `adaptive_repvit_node`, and `edgeai_logger`.
+
+Input images are read from `data/test_images` by default. Supported extensions are `.jpg`, `.jpeg`, and `.png`. The RepViT image path converts ROS image messages to RGB tensors, resizes according to the active runtime level, applies ImageNet-style normalization, runs inference on `cpu` or `cuda`, and logs per-frame latency metrics.
+
 ## Repository Layout
 
 ```text
@@ -132,6 +158,14 @@ For official RepViT experiments, set:
 
 ```bash
 export REPVIT_PATH=/workspace/OS2026/RepViT
+```
+
+If you want to download the RepViT-M0.9 checkpoint manually, place it under `checkpoints/`:
+
+```bash
+mkdir -p checkpoints
+wget -O checkpoints/repvit_m0_9.pth \
+  https://github.com/THU-MIG/RepViT/releases/download/v1.0/repvit_m0_9_distill_300e.pth
 ```
 
 ### Local LLM Models
@@ -633,6 +667,34 @@ ros2 run edgeai_ros prompt_publisher \
   --ros-args -p period_sec:=5.0
 ```
 
+## ROS 2 Topic Checks
+
+Use these commands when you want to verify the live RepViT image pipeline manually:
+
+```bash
+ros2 topic list
+ros2 topic hz /image_raw
+ros2 topic echo /repvit_latency
+ros2 node list
+```
+
+For the RepViT path, the expected topics include:
+
+```text
+/image_raw
+/repvit_latency
+/edgeai_os_state
+/edgeai_scheduler_decision
+```
+
+For the LLM path, the expected topics include:
+
+```text
+/llm_prompt
+/llm_metrics
+/llm_scheduler_decision
+```
+
 ## Output Metrics
 
 The logger writes CSV rows with fields such as:
@@ -662,6 +724,14 @@ The logger writes CSV rows with fields such as:
 - `output_tokens`
 - `fallback_model`
 - `model_source`
+
+Very old RepViT-only runs may contain a single `raw_message` column instead of structured CSV fields. Those rows usually embed values in this form:
+
+```text
+frame=<id>, image=<filename>, pred_class=<imagenet_class_id>, infer_ms=<ms>, e2e_ms=<ms>, device=<cpu_or_cuda>
+```
+
+In that legacy format, `infer_ms` is model forward latency, `e2e_ms` is callback-level end-to-end latency, `pred_class` is the ImageNet class id from `argmax`, and `device` records whether inference ran on `cpu` or `cuda`.
 
 Useful checks:
 
